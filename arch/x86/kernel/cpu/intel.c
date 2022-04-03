@@ -1043,6 +1043,19 @@ static bool split_lock_verify_msr(bool on)
 	return ctrl == tmp;
 }
 
+static void _disable_split_lock_detection(void* unused) {
+	if (!split_lock_verify_msr(false)) {
+		pr_info("MSR access failed: Disabled\n");
+	}
+}
+
+void split_lock_detection_disable(void) {
+	if (sld_state != sld_off) {
+		setup_clear_cpu_cap(X86_FEATURE_SPLIT_LOCK_DETECT);
+		on_each_cpu(_disable_split_lock_detection, NULL, 1);
+	}
+}
+
 static void __init sld_state_setup(void)
 {
 	enum split_lock_detect_state state = sld_warn;

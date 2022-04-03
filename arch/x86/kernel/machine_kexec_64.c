@@ -19,6 +19,7 @@
 #include <linux/efi.h>
 #include <linux/cc_platform.h>
 
+#include <asm/cpu.h>
 #include <asm/init.h>
 #include <asm/tlbflush.h>
 #include <asm/mmu_context.h>
@@ -274,6 +275,9 @@ int machine_kexec_prepare(struct kimage *image)
 {
 	unsigned long start_pgtable;
 	int result;
+
+	/* Disable split lock detection if needed */
+	split_lock_detection_disable();
 
 	/* Calculate the offsets */
 	start_pgtable = page_to_pfn(image->control_code_page) << PAGE_SHIFT;
